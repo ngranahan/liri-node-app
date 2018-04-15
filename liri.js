@@ -5,6 +5,7 @@ var spotify = require("node-spotify-api");
 var twitter = require("twitter");
 var omdb = require('omdb');
 var request = require("request");
+var fs = require("fs");
 
 var newSpotify = new spotify(keys.spotify);
 var client = new twitter(keys.twitter);
@@ -161,9 +162,47 @@ function getMovie() {
 
     }
 
+}
 
+function doTheThing() {
+    fs.readFile("random.txt", "utf8", function(err, data) {
+        if (err) {
+            return console.log(err);
+        }
 
+        console.log(data);
 
+        var splitData = data.split(",");
+        console.log("data test: " + splitData[0]);
+        console.log("data test 2: " + splitData[1]);
 
+        if (splitData[0] === "spotify-this-song") {
 
+            newSpotify
+            .search({ type: 'track', query: splitData[1], limit: 5 })
+            .then(function (response) {
+
+                console.log("\nArtist: " + JSON.stringify(response.tracks.items[0].album.artists[0].name, null, 2));
+
+                console.log("---------------");
+
+                console.log("Song: " + process.argv[3]);
+
+                console.log("---------------");
+
+                console.log("URL: " + JSON.stringify(response.tracks.items[0].album.external_urls.spotify, null, 2));
+
+                console.log("---------------");
+
+                console.log("Album: " + JSON.stringify(response.tracks.items[0].album.name, null, 2));
+
+                console.log("---------------");
+            })
+
+            .catch(function (err) {
+                console.log(err);
+            });
+        }
+
+    })
 }
