@@ -6,6 +6,7 @@ var twitter = require("twitter");
 var omdb = require('omdb');
 var request = require("request");
 var fs = require("fs");
+var searchResults = [];
 
 var newSpotify = new spotify(keys.spotify);
 var client = new twitter(keys.twitter);
@@ -42,12 +43,15 @@ function getTweets() {
 
             for (var i = 0; i < tweets.length; i++) {
                 console.log("---------------");
-
                 console.log(tweets[i].text);
                 console.log(tweets[i].created_at);
-
                 console.log("---------------");
+
+                // Push search results to an array then call logResults function to add to search log
+                searchResults.splice(0, searchResults.length, tweets[i].text, tweets[i].created_at);
+                logResults(searchResults);
             }
+
         }
     });
 
@@ -62,19 +66,12 @@ function getSong() {
             .then(function (response) {
 
                 console.log("\nArtist: " + JSON.stringify(response.tracks.items[0].album.artists[0].name, null, 2));
-
                 console.log("---------------");
-
                 console.log("Song: " + process.argv[3]);
-
                 console.log("---------------");
-
                 console.log("URL: " + JSON.stringify(response.tracks.items[0].album.external_urls.spotify, null, 2));
-
                 console.log("---------------");
-
                 console.log("Album: " + JSON.stringify(response.tracks.items[0].album.name, null, 2));
-
                 console.log("---------------");
             })
 
@@ -93,19 +90,12 @@ function getSong() {
                     if (response.tracks.items[x].artists[0].name === "Ace of Base") {
 
                         console.log("\nArtist: " + JSON.stringify(response.tracks.items[x].artists[0].name, null, 2));
-
                         console.log("---------------");
-
                         console.log("Song: The Sign");
-
                         console.log("---------------");
-
                         console.log("URL: " + JSON.stringify(response.tracks.items[x].album.external_urls.spotify, null, 2));
-
                         console.log("---------------");
-
                         console.log("Album: " + JSON.stringify(response.tracks.items[x].album.name, null, 2));
-
                         console.log("---------------");
 
                     }
@@ -185,23 +175,27 @@ function doTheThing() {
                 console.log("\nArtist: " + JSON.stringify(response.tracks.items[0].album.artists[0].name, null, 2));
 
                 console.log("---------------");
-
                 console.log("Song: " + process.argv[3]);
-
                 console.log("---------------");
-
                 console.log("URL: " + JSON.stringify(response.tracks.items[0].album.external_urls.spotify, null, 2));
-
                 console.log("---------------");
-
                 console.log("Album: " + JSON.stringify(response.tracks.items[0].album.name, null, 2));
-
                 console.log("---------------");
             })
 
             .catch(function (err) {
                 console.log(err);
             });
+        }
+
+    })
+}
+
+// log results from the searchResults array
+function logResults() {
+    fs.appendFile("log.txt", "New Search: " + searchResults + ", ", function(err) {
+        if (err) {
+            return console.log(err);
         }
 
     })
